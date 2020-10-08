@@ -165,8 +165,6 @@ def testMyTrix():
         print(subMatrix);
         subMatrix = picture.nextSubMatrix();
         
-   
-    
     #test subMatrix replacement
     print("\nMatrix with replacement:");
     picture.replaceSubMatrix([[1,-2],[3,4]]);
