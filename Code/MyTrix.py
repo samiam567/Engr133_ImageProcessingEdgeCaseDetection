@@ -178,8 +178,6 @@ def testMyTrix():
     
 testMyTrix();
 
-
-
 '''
 ===============================================================================
 ACADEMIC INTEGRITY STATEMENT
