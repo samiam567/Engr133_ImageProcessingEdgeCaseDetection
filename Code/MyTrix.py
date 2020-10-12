@@ -34,6 +34,7 @@ class MyTrix():
         else:
             self.array = array;
             self.updateArraySize();
+            self.debugMode = False;
     
     def at(self,i,j):
        return self.array[i][j];
@@ -44,6 +45,9 @@ class MyTrix():
     def __getitem__(self,key):
         return self.array[key];
     
+    
+    def setDebugMode(self, debugMode):
+        self.debugMode = debugMode;
     
     def updateArraySize(self):
         self.rowSize = self.array.shape[0];
@@ -120,7 +124,7 @@ class MyTrix():
         except IndexError:
             print("index error (replaceSubMatrix)");
             
-    
+    # pads this array by adding [padding] layers of zeros around it 
     def pad(self,padding = 1):
         if (padding > 0):
             padding = int(padding);
@@ -132,14 +136,16 @@ class MyTrix():
                     
             self.array = paddedMatrix;
             self.updateArraySize();
-            print("Padded Matrix: ");
-            print(self.array);
+            
+            if (self.debugMode):
+                print(f"Padded Matrix {padding} layers: ");
+                print(self.array);
         else:
             print("cannot pad a negative or zero amount.");
             
         
         
-
+    # calculates the transformation of this matrix by the passed transArray
     def calculateTransformation(self,transArray,padding=0,stride=1):
         
         if (padding > 0):
@@ -152,22 +158,24 @@ class MyTrix():
         fR = len(transArray);
         fC = len(transArray[0]);
         
-        print(f"outSize = int(floor( (1 + {nR} + {padding} - {fR}) / {stride} ) )")
+       
         outLenR = int(floor( (1 + nR - fR) / stride ) ); 
         outLenC = int(floor( (1+ nC - fC) / stride ) ); 
         
         outMatrix = np.zeros((outLenR,outLenC));
         
-        print("OutMatrix before");
-        print(outMatrix);
+        if (self.debugMode):
+           print(f"outSize = int(floor( (1 + {nR} + {padding} - {fR}) / {stride} ) )")
+           print("OutMatrix before");
+           print(outMatrix);
         
         #start subMatrix stepping
         self.startSubMatrixAquisition(len(transArray),len(transArray[0]),stride);
     
         subMatrix = self.nextSubMatrix();
         while (type(subMatrix) != type(None)):
-            print("SubMatrix:");
-            print(subMatrix);
+            
+            
             dotProduct = 0;
             for rowIndx in range(0,len(subMatrix)):
                 for columnIndx in range(0,len(subMatrix[0])):
@@ -175,7 +183,11 @@ class MyTrix():
             
             outMatrix[self.subRowIndx][self.subColumnIndx] = dotProduct; #put the dot product of the transformation in the output matrix
             
-            print(f"Dot product: {dotProduct}");
+            
+            if (self.debugMode):
+                print("SubMatrix:");
+                print(subMatrix);
+                print(f"Dot product: {dotProduct}");
             
             subMatrix = self.nextSubMatrix();
 
@@ -183,16 +195,11 @@ class MyTrix():
     
     
     
-   
+    #transforms the picture
     def transForm(self,transArray,padding = 0, stride = 1):
         self.array = self.calculateTransformation(transArray,padding,stride);
         self.updateArraySize();
         
-        
-      
-
-        
-            
 
 def testMyTrix():   
     #create a 2D numpy array
@@ -200,6 +207,9 @@ def testMyTrix():
     
     #initialize a MyTricks with the numpy array
     picture = MyTrix(a);
+    
+    #turn on debug mode so we can see what is happening
+    picture.setDebugMode(True);
     
     #MyTrix manipulation should work the same as normal array manipulations at base levels
     print("rowSize:", picture.rowSize);
@@ -230,8 +240,16 @@ def testMyTrix():
     picture.replaceSubMatrix([[1,-2,3],[4,5,6],[7,8,9]]);
     print(picture);
     
+    
+    #test transformation with padding 1
     print("\n Test transformation:");
     picture.transForm([[-1,2],[3,4]],1);
+    print(picture);
+    
+    
+    #test transformation with padding 2 and larger transformation
+    print("\n Test transformation:");
+    picture.transForm([[1,-2,3],[4,5,6],[7,8,9]],2);
     print(picture);
     
 testMyTrix();
