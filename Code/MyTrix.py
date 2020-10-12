@@ -33,8 +33,7 @@ class MyTrix():
                 raise TypeError("MyTricks must be initialized with a numpy array");
         else:
             self.array = array;
-            self.rowSize = array.shape[0];
-            self.columnSize = array.shape[1];
+            self.updateArraySize();
     
     def at(self,i,j):
        return self.array[i][j];
@@ -44,6 +43,11 @@ class MyTrix():
     
     def __getitem__(self,key):
         return self.array[key];
+    
+    
+    def updateArraySize(self):
+        self.rowSize = self.array.shape[0];
+        self.columnSize = self.array.shape[1];
 
     #initializes the process of parcing through the MyTrix by sub-matricies of the specified size
     def startSubMatrixAquisition(self,rowSize, columnSize, stride=1):
@@ -119,18 +123,27 @@ class MyTrix():
     
     def pad(self,padding = 1):
         if (padding > 0):
-            ## MAKE NEW MATRIX AND COPY OLD ONE OVER
-        else:
-            print("cannot pad a negative amount.");
+            padding = int(padding);
+            paddedMatrix = np.zeros((len(self.array)+2*padding,len(self.array[0])+2*padding));
             
-        
-        
-        
+            for rowIndx in range(0,len(self.array)):
+                for columnIndx in range(0,len(self.array[0])):
+                    paddedMatrix[rowIndx+padding][columnIndx+padding] = self.array[rowIndx][columnIndx];
+                    
+            self.array = paddedMatrix;
+            self.updateArraySize();
+            print("Padded Matrix: ");
+            print(self.array);
+        else:
+            print("cannot pad a negative or zero amount.");
+            
         
         
 
     def calculateTransformation(self,transArray,padding=0,stride=1):
-        self.pad(padding);
+        
+        if (padding > 0):
+            self.pad(padding);
         
         
         #calculate output matrix size
@@ -139,25 +152,30 @@ class MyTrix():
         fR = len(transArray);
         fC = len(transArray[0]);
         
-        outLenR = floor(nR + 2*padding - fR)/stride; 
-        outLenC = floor(nC + 2*padding - fC)/stride; 
+        print(f"outSize = int(floor( (1 + {nR} + {padding} - {fR}) / {stride} ) )")
+        outLenR = int(floor( (1 + nR - fR) / stride ) ); 
+        outLenC = int(floor( (1+ nC - fC) / stride ) ); 
         
-        outMatrix = np.empty((outLenR,outLenC));
+        outMatrix = np.zeros((outLenR,outLenC));
         
+        print("OutMatrix before");
+        print(outMatrix);
         
         #start subMatrix stepping
         self.startSubMatrixAquisition(len(transArray),len(transArray[0]),stride);
     
         subMatrix = self.nextSubMatrix();
         while (type(subMatrix) != type(None)):
-            
+            print("SubMatrix:");
+            print(subMatrix);
             dotProduct = 0;
             for rowIndx in range(0,len(subMatrix)):
                 for columnIndx in range(0,len(subMatrix[0])):
                     dotProduct += transArray[rowIndx][columnIndx] * subMatrix[rowIndx][columnIndx];
             
             outMatrix[self.subRowIndx][self.subColumnIndx] = dotProduct; #put the dot product of the transformation in the output matrix
-
+            
+            print(f"Dot product: {dotProduct}");
             
             subMatrix = self.nextSubMatrix();
 
@@ -168,6 +186,7 @@ class MyTrix():
    
     def transForm(self,transArray,padding = 0, stride = 1):
         self.array = self.calculateTransformation(transArray,padding,stride);
+        self.updateArraySize();
         
         
       
@@ -208,11 +227,11 @@ def testMyTrix():
         
     #test subMatrix replacement
     print("\nMatrix with replacement:");
-    picture.replaceSubMatrix([[1,-2],[3,4]]);
+    picture.replaceSubMatrix([[1,-2,3],[4,5,6],[7,8,9]]);
     print(picture);
     
     print("\n Test transformation:");
-    picture.transForm([[-1,2],[3,4]])
+    picture.transForm([[-1,2],[3,4]],1);
     print(picture);
     
 testMyTrix();
