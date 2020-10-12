@@ -24,7 +24,8 @@ Contributors:   Jonathan, jdufresn@purdue.edu
 '''
 
 
-import numpy as np;
+import numpy as np
+from math import floor
 
 class MyTrix():
     def __init__(self,array): #initialize a new MyTrix object with a numpy array 
@@ -45,7 +46,7 @@ class MyTrix():
         return self.array[key];
 
     #initializes the process of parcing through the MyTrix by sub-matricies of the specified size
-    def startSubMatrixAquisition(self,rowSize, columnSize):
+    def startSubMatrixAquisition(self,rowSize, columnSize, stride=1):
         self.subRowSize = rowSize;
         self.subColumnSize = columnSize;
         
@@ -53,15 +54,16 @@ class MyTrix():
         self.subRowIndx = 0; 
         self.subColumnIndx = -1; #we start at -1 because we increment the indeces at the start of the nextSubMatrix method
         
+        self.stride = stride; # stride is how many elements we iterate each subMatrix
         
     # will return the next submatrix of the specified size. (startSubMatrixAquisition() must be called before this method for it to work properly)
     def nextSubMatrix(self):
         
         #advance to the next subMatrix indices
-        if ((self.subColumnIndx+1)*self.subColumnSize < self.columnSize):
+        if ((self.subColumnIndx*self.stride) + self.subColumnSize < self.columnSize):
                 self.subColumnIndx += 1;
         
-        elif ( (self.subRowIndx+1)*self.subRowSize < self.rowSize):
+        elif ( (self.subRowIndx*self.stride) + self.subRowSize < self.rowSize):
             self.subColumnIndx = 0;
             self.subRowIndx += 1;
         else:
@@ -74,8 +76,8 @@ class MyTrix():
         
         try:
             #determine where to start grabbing values from the our matrix
-            startRowIndx = self.subRowIndx * self.subRowSize;
-            startColumnIndx = self.subColumnIndx * self.subColumnSize; 
+            startRowIndx = self.subRowIndx * self.stride;
+            startColumnIndx = self.subColumnIndx * self.stride; 
             
             #fill the submatrix with our matrix's values
             for relativeRowIndx in range(0,self.subRowSize):
@@ -113,23 +115,62 @@ class MyTrix():
 
         except IndexError:
             print("index error (replaceSubMatrix)");
-
-    #transforms the matrix by multiplying each element by the cooresponding 
-    def transForm(self,transArray):
-        #start subMatrix stepping
-        self.startSubMatrixAquisition(len(transArray),len(transArray[0]));
+            
+    
+    def pad(self,padding = 1):
+        if (padding > 0):
+            ## MAKE NEW MATRIX AND COPY OLD ONE OVER
+        else:
+            print("cannot pad a negative amount.");
+            
         
+        
+        
+        
+        
+
+    def calculateTransformation(self,transArray,padding=0,stride=1):
+        self.pad(padding);
+        
+        
+        #calculate output matrix size
+        nR = len(self.array);
+        nC = len(self.array[0]);
+        fR = len(transArray);
+        fC = len(transArray[0]);
+        
+        outLenR = floor(nR + 2*padding - fR)/stride; 
+        outLenC = floor(nC + 2*padding - fC)/stride; 
+        
+        outMatrix = np.empty((outLenR,outLenC));
+        
+        
+        #start subMatrix stepping
+        self.startSubMatrixAquisition(len(transArray),len(transArray[0]),stride);
+    
         subMatrix = self.nextSubMatrix();
         while (type(subMatrix) != type(None)):
             
+            dotProduct = 0;
             for rowIndx in range(0,len(subMatrix)):
                 for columnIndx in range(0,len(subMatrix[0])):
-                    subMatrix[rowIndx][columnIndx] = transArray[rowIndx][columnIndx] * subMatrix[rowIndx][columnIndx];
-                    
-            self.replaceSubMatrix(subMatrix);
+                    dotProduct += transArray[rowIndx][columnIndx] * subMatrix[rowIndx][columnIndx];
+            
+            outMatrix[self.subRowIndx][self.subColumnIndx] = dotProduct; #put the dot product of the transformation in the output matrix
+
             
             subMatrix = self.nextSubMatrix();
-            
+
+        return outMatrix;
+    
+    
+    
+   
+    def transForm(self,transArray,padding = 0, stride = 1):
+        self.array = self.calculateTransformation(transArray,padding,stride);
+        
+        
+      
 
         
             
