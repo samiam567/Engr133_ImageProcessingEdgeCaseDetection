@@ -23,20 +23,20 @@ Contributors:   Jonathan, jdufresn@purdue.edu
 ===============================================================================
 '''
 
-import MyTrix
+from MyTrix import MyTrix
 import Input_Output
-from Grayscale import Grayscale
+from Grayscale import grayscale
 
 
 
 raw_image = Input_Output.inputImage("coins.png");
 
-grayScale_image = Graysale(raw_image);
+grayScale_image = grayscale(raw_image);
 
 picture = MyTrix(grayScale_image);
       
 #turn debug mode off so we don't see what is happening
-picture.setDebugMode(True);
+picture.setDebugMode(False);
 
 
 blurTransArray = [[0.25,0.25],[0.25,0.25]];

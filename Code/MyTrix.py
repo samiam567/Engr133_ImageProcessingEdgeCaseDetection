@@ -205,7 +205,7 @@ class MyTrix():
     
     
     #transforms the picture
-    def transForm(self,transArray,padding = 0, stride = 1):
+    def transform(self,transArray,padding = 0, stride = 1):
         self.array = self.calculateTransformation(transArray,padding,stride);
         self.updateArraySize();
         
@@ -254,13 +254,13 @@ def testMyTrix():
     
     #test transformation with padding 1
     print("\n Test transformation:");
-    picture.transForm([[-1,2],[3,4]],1);
+    picture.transform([[-1,2],[3,4]],1);
     print(picture);
     
     
     #test transformation with padding 2 and larger transformation
     print("\n Test transformation:");
-    picture.transForm([[1,-2,3],[4,5,6],[7,8,9]],2);
+    picture.transform([[1,-2,3],[4,5,6],[7,8,9]],2);
     print(picture);
     
 #testMyTrix();

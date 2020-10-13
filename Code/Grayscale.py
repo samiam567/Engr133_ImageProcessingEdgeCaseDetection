@@ -16,7 +16,7 @@ im = im.astype(int)
 
 
 
-def Grayscale(im):
+def grayscale(im):
     y = 0
     for x in range(0,len(im)):
         for i in range(0,len(im[0])):
@@ -42,8 +42,9 @@ def Grayscale(im):
 
     
     return gray
-    
+'''    
 x = Grayscale(im)
 
 pyplot.imshow(x)
 pyplot.show()
+'''
