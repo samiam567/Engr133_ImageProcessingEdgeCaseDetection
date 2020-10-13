@@ -208,6 +208,8 @@ def testMyTrix():
     #initialize a MyTricks with the numpy array
     picture = MyTrix(a);
     
+    
+    
     #turn on debug mode so we can see what is happening
     picture.setDebugMode(True);
     
@@ -252,7 +254,7 @@ def testMyTrix():
     picture.transForm([[1,-2,3],[4,5,6],[7,8,9]],2);
     print(picture);
     
-testMyTrix();
+#testMyTrix();
 
 '''
 ===============================================================================
