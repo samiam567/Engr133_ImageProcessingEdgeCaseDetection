@@ -4,7 +4,7 @@
 ENGR 133 Fa 2020
 
 Assignment Information
-	Assignment:     Python Project 1
+	Assignment:     Py4 Task 3
 	Author:         Sam Graham, graha205@purdue.edu
 	Team ID:        LC4-05
 	
@@ -37,12 +37,22 @@ def inputImage(s= input("Enter png name here:")):
     imMat = imMat * 255 #Multiplies the 3rd dimension of the matrix (the one containing the 0-1 float RGB values) by 255 for later integer conversion
     imMat = np.around(imMat) #Rounds the RBG values to the nearest whole number, still returns values as floats
     imMat = imMat.astype(int) #Transforms the rounded float RGB values to integers
-    return imMat #Returns the matrix containing the image information
+    return imMat #Returns the array containing the image information
 
 def outputImage(s):
-    s = s/255.0 #the functions imsave and imshow are finiky around int RGB values, so it's overall easier to simply transform the inputed matrix back into 0-1 float values
-    image.imsave("EdgeDectedImage.png",s) #Uses the given matrix of dimensions [x][y][z] to write an image file that is x pixels wide by y pixels tall with color at each pixel determines by the RGB values in z
-    pyplot.imshow(s) #Similar to imsave however instead of writing it to a file, imshow displays the inputed matrix as an image in the "Plots" tab
+    if s.shape[2] < 2:
+        x = np.zeros((s.shape[0],s.shape[1],3))
+        for a in range(0,s.shape[0]):
+            for b in range(0, s.shape[1]):
+                for c in range(0,3):
+                    x[a][b][c] = s[a][b]
+        x = x/255.0
+        image.imsave("EdgeDectedImage.png",x) #Uses the given matrix of dimensions [x][y][z] to write an image file that is x pixels wide by y pixels tall with color at each pixel determines by the RGB values in z
+        pyplot.imshow(x)
+    else:        
+        s = s/255.0 #the functions imsave and imshow are finiky around int RGB values, so it's overall easier to simply transform the inputed matrix back into 0-1 float values
+        image.imsave("EdgeDectedImage.png",s) #Uses the given matrix of dimensions [x][y][z] to write an image file that is x pixels wide by y pixels tall with color at each pixel determines by the RGB values in z
+        pyplot.imshow(s) #Similar to imsave however instead of writing it to a file, imshow displays the inputed matrix as an image in the "Plots" tab
     
 s = inputImage()
 outputImage(s)

@@ -52,6 +52,15 @@ class MyTrix():
     def updateArraySize(self):
         self.rowSize = self.array.shape[0];
         self.columnSize = self.array.shape[1];
+        
+    #will make all values smaller than the threshold lowVal and larger than threshold highVal
+    def threshold(self,thresh = 155, highVal = 255,lowVal = 0):
+        for rowIndx in range(0,len(self.array)):
+            for columnIndx in range(0,len(self.array[0])):
+                if (self.array[rowIndx][columnIndx] >= thresh):
+                    self.array[rowIndx][columnIndx] = highVal;
+                else:
+                    self.array[rowIndx][columnIndx] = lowVal;
 
     #initializes the process of parcing through the MyTrix by sub-matricies of the specified size
     def startSubMatrixAquisition(self,rowSize, columnSize, stride=1):
