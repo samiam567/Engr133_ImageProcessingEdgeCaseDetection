@@ -25,7 +25,7 @@ Contributors:   Jonathan, jdufresn@purdue.edu
 
 
 import numpy as np
-from math import floor
+from math import floor, sqrt
 
 class MyTrix():
     def __init__(self,array, largestValueAllowed = 255): #initialize a new MyTrix object with a numpy array 
@@ -107,6 +107,17 @@ class MyTrix():
                     self.array[rowIndx][columnIndx] = highVal;
                 else: #otherwise set it to lowVal
                     self.array[rowIndx][columnIndx] = lowVal;
+                    
+                    
+    #will make all values smaller than the threshold lowVal and larger than threshold highVal
+    def enhance(self):
+  
+        # iterate through all of the elements
+        for rowIndx in range(0,len(self.array)):
+            for columnIndx in range(0,len(self.array[0])):
+                x = self.array[rowIndx][columnIndx];
+                self.array[rowIndx][columnIndx] = x*2;
+                if (self.array[rowIndx][columnIndx] > self.largestValueAllowed): self.array[rowIndx][columnIndx] = 255;
 
     #initializes the process of parcing through the MyTrix by sub-matricies of the specified size
     def startSubMatrixAquisition(self,rowSize, columnSize, stride=1):

@@ -75,14 +75,22 @@ def runPicture(fileName,thresh=20,outputFile = "EdgeDetectedImage.png"):
     print("Combined:");
     Input_Output.outputImage(picture.array);
     
-    
+    print("enhance")    
+    picture.enhance();
+
+
     print("thresh");
     picture.threshold(thresh);
     Input_Output.outputImage(picture.array,outputFile);
     
-    print("done");
     
+    
+    print("done");
+
+
 #runPicture("coins",20,"edgyCoins.png");
 #runPicture("Purdue_Arch",5,"edgyArch.png");
 #runPicture("cheerios.png",5,"edgycheerios.png");
-runPicture("CMOS.png",10,"edgyCMOS.png");
+#runPicture("CMOS.png",10,"edgyCMOS.png");
+runPicture("Lenna",15,"edgyLenna.png");
+#runPicture("edgyLenna",5,"edgyEdgyLenna.png");
