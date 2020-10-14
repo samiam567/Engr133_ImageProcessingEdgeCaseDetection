@@ -20,11 +20,14 @@ Contributors: jdufres@purdue.edu, long365@purdue.edu, afpannun@purdue.edu
 	have to list that person as a contributor here as well.
 ===============================================================================
 '''
+
+
+
 import numpy as np #Importing numpy for matrix use
 from matplotlib import image #Importing the functinos of matplotlib that can transform an image into a matrix and back again along with other various functions
 from matplotlib import pyplot #Importing the functions from matplotlib that allow us to plot the image in Spyder
 import sys #Imports sys so that we can exit the code upon an error occuring
-def inputImage(s= input("Enter png name here:")):
+def inputImage(s):
     try: #Tries the following line of code and if an exception or error is returned then it moves on to the code under except
         imMat = image.imread(s) #The imread function transforms an inputed image into a 3d matrix where each [x][y] is home to a list of 3 values from 0-1 representing RGB values
     except FileNotFoundError: #This is where the errors are handled, tests to see if user forgot ".png", and if the file cannot be found, then it returns an error message
@@ -39,23 +42,23 @@ def inputImage(s= input("Enter png name here:")):
     imMat = imMat.astype(int) #Transforms the rounded float RGB values to integers
     return imMat #Returns the array containing the image information
 
-def outputImage(s):
-    if s.shape[2] < 2:
-        x = np.zeros((s.shape[0],s.shape[1],3))
-        for a in range(0,s.shape[0]):
-            for b in range(0, s.shape[1]):
-                for c in range(0,3):
-                    x[a][b][c] = s[a][b]
-        x = x/255.0
-        image.imsave("EdgeDectedImage.png",x) #Uses the given matrix of dimensions [x][y][z] to write an image file that is x pixels wide by y pixels tall with color at each pixel determines by the RGB values in z
-        pyplot.imshow(x)
-    else:        
-        s = s/255.0 #the functions imsave and imshow are finiky around int RGB values, so it's overall easier to simply transform the inputed matrix back into 0-1 float values
-        image.imsave("EdgeDectedImage.png",s) #Uses the given matrix of dimensions [x][y][z] to write an image file that is x pixels wide by y pixels tall with color at each pixel determines by the RGB values in z
-        pyplot.imshow(s) #Similar to imsave however instead of writing it to a file, imshow displays the inputed matrix as an image in the "Plots" tab
+def outputImage(s, imgName = "EdgeDetectedImage.png"):
+    x = np.zeros((s.shape[0],s.shape[1],3))
+    for a in range(0,s.shape[0]):
+        for b in range(0, s.shape[1]):
+            for c in range(0,3):
+                x[a][b][c] = s[a][b]
+    x = x/255.0
+    image.imsave(imgName,x); #Uses the given matrix of dimensions [x][y][z] to write an image file that is x pixels wide by y pixels tall with color at each pixel determines by the RGB values in z
     
-s = inputImage()
+    pyplot.imshow(x);
+    
+    
+    '''
+x = inputImage()  
+s = np.zeros((400,400))
 outputImage(s)
+'''
 '''
 ===============================================================================
 ACADEMIC INTEGRITY STATEMENT

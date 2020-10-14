@@ -28,13 +28,14 @@ import numpy as np
 from math import floor
 
 class MyTrix():
-    def __init__(self,array): #initialize a new MyTrix object with a numpy array 
+    def __init__(self,array, largestValueAllowed = 255): #initialize a new MyTrix object with a numpy array 
         if not (type(array) is np.ndarray):
                 raise TypeError("MyTricks must be initialized with a numpy array");
         else:
             self.array = array;
             self.updateArraySize();
             self.debugMode = False;
+            self.largestValueAllowed = largestValueAllowed; #the largest value we want elements of this array to have on transformations
     
     def at(self,i,j):
        return self.array[i][j];
@@ -45,21 +46,66 @@ class MyTrix():
     def __getitem__(self,key):
         return self.array[key];
     
-    
+    def __add__(self,addPic):
+        
+        try:
+            addMat = addPic.array;
+        except TypeError:
+            print("Cannot add type", type(addPic), "and Picture");
+            
+        #figure out which matrix is smaller and limit the indices accordingly
+        if (len(self.array) < len(addMat)):
+            rowLimit = len(self.array);
+        else:
+            rowLimit = len(addMat);
+                
+        if (len(self.array[0]) < len(addMat[0])):
+            columnLimit = len(self.array[0]);
+        else:
+            columnLimit = len(addMat[0]);
+            
+        #create an output array with 
+        outMat = np.empty((rowLimit,columnLimit));
+            
+        for rowIndx in range(0,rowLimit):
+            for columnIndx in range(0,columnLimit):
+                outMat[rowIndx][columnIndx] = (self.array[rowIndx][columnIndx] + addMat[rowIndx][columnIndx])/2;
+        return outMat;
+
+    #sets whether to give verbose progress logs or not
     def setDebugMode(self, debugMode):
         self.debugMode = debugMode;
     
+    #updates class members related to size. must be called after resizing the array
     def updateArraySize(self):
         self.rowSize = self.array.shape[0];
         self.columnSize = self.array.shape[1];
         
-    #will make all values smaller than the threshold lowVal and larger than threshold highVal
-    def threshold(self,thresh = 155, highVal = 255,lowVal = 0):
+    #returns a copy of the array    
+    def getArrayCopy(self):
+        return np.arrCopy(self.array);
+        
+        
+    #converts all of the elements of the matrix to integers
+    def toInt(self):
+        self.array = self.array.astype(int);
+        '''
+        #iterate through all of the elements
         for rowIndx in range(0,len(self.array)):
             for columnIndx in range(0,len(self.array[0])):
-                if (self.array[rowIndx][columnIndx] >= thresh):
+                    self.array[rowIndx][columnIndx] = int(self.array[rowIndx][columnIndx]); #convert to int
+        '''
+        
+    #will make all values smaller than the threshold lowVal and larger than threshold highVal
+    def threshold(self,thresh = 155, highVal = 255,lowVal = 0):
+        
+        # iterate through all of the elements
+        for rowIndx in range(0,len(self.array)):
+            for columnIndx in range(0,len(self.array[0])):
+                
+                if (self.array[rowIndx][columnIndx] >= thresh): # if this element is larger than the threshold then set it to highval
                     self.array[rowIndx][columnIndx] = highVal;
-                else:
+                else: #otherwise set it to lowVal
                     self.array[rowIndx][columnIndx] = lowVal;
 
     #initializes the process of parcing through the MyTrix by sub-matricies of the specified size
@@ -72,6 +118,8 @@ class MyTrix():
         self.subColumnIndx = -1; #we start at -1 because we increment the indeces at the start of the nextSubMatrix method
         
         self.stride = stride; # stride is how many elements we iterate each subMatrix
+        
+        
         
     # will return the next submatrix of the specified size. (startSubMatrixAquisition() must be called before this method for it to work properly)
     def nextSubMatrix(self):
@@ -114,6 +162,8 @@ class MyTrix():
             startRowIndx = self.subRowIndx * self.subRowSize;
             startColumnIndx = self.subColumnIndx * self.subColumnSize; 
             
+            
+            #figure out which matrix is smaller and limit the indices accordingly
             if (self.subRowSize < len(newArray)):
                 rowLimit = self.subRowSize;
             else:
@@ -155,12 +205,9 @@ class MyTrix():
         
         
     # calculates the transformation of this matrix by the passed transArray
-    def calculateTransformation(self,transArray,padding=0,stride=1):
+    def calculateTransformation(self,transArray,stride=1):
         
-        if (padding > 0):
-            self.pad(padding);
-        
-        
+      
         #calculate output matrix size
         nR = len(self.array);
         nC = len(self.array[0]);
@@ -174,7 +221,7 @@ class MyTrix():
         outMatrix = np.zeros((outLenR,outLenC));
         
         if (self.debugMode):
-           print(f"outSize = int(floor( (1 + {nR} + {padding} - {fR}) / {stride} ) )")
+           print(f"outSize = int(floor( (1 + {nR} - {fR}) / {stride} ) )")
            print("OutMatrix before");
            print(outMatrix);
         
@@ -190,7 +237,7 @@ class MyTrix():
                 for columnIndx in range(0,len(subMatrix[0])):
                     dotProduct += transArray[rowIndx][columnIndx] * subMatrix[rowIndx][columnIndx];
             
-            outMatrix[self.subRowIndx][self.subColumnIndx] = dotProduct; #put the dot product of the transformation in the output matrix
+            outMatrix[self.subRowIndx][self.subColumnIndx] = abs(dotProduct/(fR*fC)); #put the dot product of the transformation in the output matrix
             
             
             if (self.debugMode):
@@ -199,14 +246,17 @@ class MyTrix():
                 print(f"Dot product: {dotProduct}");
             
             subMatrix = self.nextSubMatrix();
-
+            
         return outMatrix;
     
     
     
     #transforms the picture
     def transform(self,transArray,padding = 0, stride = 1):
-        self.array = self.calculateTransformation(transArray,padding,stride);
+        if (padding > 0):
+            self.pad(padding);
+        
+        self.array = self.calculateTransformation(transArray,stride);
         self.updateArraySize();
         
 

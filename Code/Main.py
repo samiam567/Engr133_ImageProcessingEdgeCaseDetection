@@ -28,40 +28,61 @@ import Input_Output
 from Grayscale import grayscale
 
 
-
-raw_image = Input_Output.inputImage("coins.png");
-
-grayScale_image = grayscale(raw_image);
-
-picture = MyTrix(grayScale_image);
-      
-#turn debug mode off so we don't see what is happening
-picture.setDebugMode(False);
-
-
-blurTransArray = [[0.25,0.25],[0.25,0.25]];
-
-xEdgeDetectArray = [[-1,0,1],[-2,0,2],[-1,0,1]];
-
-yEdgeDetectArray = [[-1,2,-1],[0,0,0],[1,2,1]];
-
-print("Blurring");
-picture.transform(blurTransArray,0);
-
-print("xEdge detect");
-xEdgeDetectTransformed = picture.calculateTransformation(xEdgeDetectArray,1);
-Input_Output.outputImage(xEdgeDetectTransformed);
-
-print("yEdge detect");
-yEdgeDetectTransformed = picture.calculateTransformation(yEdgeDetectArray,1);
-Input_Output.outputImage(yEdgeDetectTransformed);
-
-picture.array = (xEdgeDetectTransformed + yEdgeDetectTransformed)/2;
-picture.updateArraySize();
-
-print("Combined:");
-Input_Output.outputImage(picture.array);
-
-
-print("thresh");
-picture.threshold(155);
+def runPicture(fileName,thresh=20,outputFile = "EdgeDetectedImage.png"):
+    raw_image = Input_Output.inputImage(fileName);
+    
+    grayScale_image = grayscale(raw_image);
+    
+    picture = MyTrix(grayScale_image);
+          
+    #turn debug mode off so we don't see what is happening
+    picture.setDebugMode(False);
+    
+    
+    blurTransArray = [[1,1],[1,1]];
+    
+    xEdgeDetectArray = [[-1,0,1],[-2,0,2],[-1,0,1]];
+    
+    yEdgeDetectArray = [[-1,-2,-1],[0,0,0],[1,2,1]];
+    
+    print("Blurring");
+    picture.transform(blurTransArray,0);
+    picture.toInt();
+    Input_Output.outputImage(picture.array);
+    
+    
+    #pad the array before we do edge detection
+    picture.pad(1);
+    
+    print("xEdge detect");
+    xEdgeDetectTransMat = picture.calculateTransformation(xEdgeDetectArray);
+    xEdgeDetectTransformed = MyTrix(xEdgeDetectTransMat);
+    xEdgeDetectTransformed.toInt();
+    
+    print(xEdgeDetectTransformed);
+    Input_Output.outputImage(xEdgeDetectTransformed.array);
+    
+    print("yEdge detect");
+    yEdgeDetectTransMat = picture.calculateTransformation(yEdgeDetectArray);
+    yEdgeDetectTransformed = MyTrix(yEdgeDetectTransMat);
+    yEdgeDetectTransformed.toInt();
+    
+    Input_Output.outputImage(yEdgeDetectTransformed.array);
+    
+    picture.array = (xEdgeDetectTransformed + yEdgeDetectTransformed);
+    picture.updateArraySize();
+    
+    print("Combined:");
+    Input_Output.outputImage(picture.array);
+    
+    
+    print("thresh");
+    picture.threshold(thresh);
+    Input_Output.outputImage(picture.array,outputFile);
+    
+    print("done");
+    
+#runPicture("coins",20,"edgyCoins.png");
+#runPicture("Purdue_Arch",5,"edgyArch.png");
+#runPicture("cheerios.png",5,"edgycheerios.png");
+runPicture("CMOS.png",10,"edgyCMOS.png");
