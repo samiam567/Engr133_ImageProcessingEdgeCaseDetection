@@ -49,9 +49,9 @@ def outputImage(s, imgName = "EdgeDetectedImage.png"):
             for c in range(0,3):
                 x[a][b][c] = s[a][b]
     x = x/255.0
-    image.imsave(imgName,x); #Uses the given matrix of dimensions [x][y][z] to write an image file that is x pixels wide by y pixels tall with color at each pixel determines by the RGB values in z
-    
     pyplot.imshow(x);
+    image.imsave(imgName,x); #Uses the given matrix of dimensions [x][y][z] to write an image file that is x pixels wide by y pixels tall with color at each pixel determines by the RGB values in z 
+    
     
     
     '''

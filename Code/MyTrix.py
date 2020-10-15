@@ -25,7 +25,7 @@ Contributors:   Jonathan, jdufresn@purdue.edu
 
 
 import numpy as np
-from math import floor, sqrt
+from math import floor
 
 class MyTrix():
     def __init__(self,array, largestValueAllowed = 255): #initialize a new MyTrix object with a numpy array 
@@ -89,12 +89,6 @@ class MyTrix():
     #converts all of the elements of the matrix to integers
     def toInt(self):
         self.array = self.array.astype(int);
-        '''
-        #iterate through all of the elements
-        for rowIndx in range(0,len(self.array)):
-            for columnIndx in range(0,len(self.array[0])):
-                    self.array[rowIndx][columnIndx] = int(self.array[rowIndx][columnIndx]); #convert to int
-        '''
         
     #will make all values smaller than the threshold lowVal and larger than threshold highVal
     def threshold(self,thresh = 155, highVal = 255,lowVal = 0):
@@ -271,6 +265,8 @@ class MyTrix():
         self.updateArraySize();
         
 
+
+#this is a testing method not used in any project
 def testMyTrix():   
     #create a 2D numpy array
     a = np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13,14,15,16]]);
