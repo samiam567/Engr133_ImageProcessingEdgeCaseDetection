@@ -25,70 +25,85 @@ Contributors:   Jonathan, jdufresn@purdue.edu
 
 from MyTrix import MyTrix
 import Input_Output
+from inputToolbox import getIntegerFromUser
 from Grayscale import grayscale
+from matplotlib import pyplot
 
 
 def runPicture(fileName,thresh=20,outputFile = "EdgeDetectedImage.png"):
     raw_image = Input_Output.inputImage(fileName);
-    
+    pyplot.figure(1)
+    pyplot.imshow(raw_image)
     grayScale_image = grayscale(raw_image);
     
-    picture = MyTrix(grayScale_image);
-          
-    #turn debug mode off so we don't see what is happening
-    picture.setDebugMode(False);
     
     
+    '''
+    NOTE: Not all methods in MyTrix are used. The ones that are used are outlined in the flowcharts
+    '''   
+    picture = MyTrix(grayScale_image); 
+    
+    
+    '''
+    these are the matrices for the transformations that we do
+    '''
     blurTransArray = [[1,1],[1,1]];
     
     xEdgeDetectArray = [[-1,0,1],[-2,0,2],[-1,0,1]];
     
     yEdgeDetectArray = [[-1,-2,-1],[0,0,0],[1,2,1]];
     
+    
+    
     print("Blurring");
     picture.transform(blurTransArray,0);
     picture.toInt();
+    pyplot.figure(2)
+    Input_Output.outputImage(picture.array);
+    
+    
+    print("Enchanced")
+    picture.enhance(10);
+    pyplot.figure(3)
     Input_Output.outputImage(picture.array);
     
     
     #pad the array before we do edge detection
-    picture.pad(1);
+    picture.pad();
     
     print("xEdge detect");
     xEdgeDetectTransMat = picture.calculateTransformation(xEdgeDetectArray);
     xEdgeDetectTransformed = MyTrix(xEdgeDetectTransMat);
     xEdgeDetectTransformed.toInt();
-    
+ 
     print(xEdgeDetectTransformed);
+    pyplot.figure(4)
     Input_Output.outputImage(xEdgeDetectTransformed.array);
-    
+
     print("yEdge detect");
     yEdgeDetectTransMat = picture.calculateTransformation(yEdgeDetectArray);
     yEdgeDetectTransformed = MyTrix(yEdgeDetectTransMat);
     yEdgeDetectTransformed.toInt();
-    
+    pyplot.figure(5)
     Input_Output.outputImage(yEdgeDetectTransformed.array);
     
     picture.array = (xEdgeDetectTransformed + yEdgeDetectTransformed);
-    picture.updateArraySize();
     
     print("Combined:");
+    pyplot.figure(6)
     Input_Output.outputImage(picture.array);
     
-    print("enhance")    
-    picture.enhance();
-
-
+   
+    
     print("thresh");
     picture.threshold(thresh);
+    pyplot.figure(7)
     Input_Output.outputImage(picture.array,outputFile);
-    
-    
     
     print("done");
 
-
+#runPicture(input("What is the fileName?"),getIntegerFromUser("What threshold do you want to use? (must be between 0 and 255 to do anything) ","threshold must be a valid integer between 0 and 255 to do anything "));
 #runPicture("coins",20,"edgyCoins.png");
-#runPicture("Purdue_Arch",5,"edgyArch.png");
-runPicture("cheerios.png",5,"edgycheerios.png");
-#runPicture("CMOS.png",10,"edgyCMOS.png");
+runPicture("Purdue_Arch",8,"edgyArch.png");
+#runPicture("cheerios.png",5,"edgycheerios.png");
+#runPicture("CMOS.png",15,"edgyCMOS.png");

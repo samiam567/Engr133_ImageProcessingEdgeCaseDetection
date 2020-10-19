@@ -7,7 +7,6 @@ Created on Thu Oct  8 11:44:41 2020
 
 # load and display an image with Matplotlib
 from matplotlib import image
-from matplotlib import pyplot
 import numpy as np
 
 im = 255 * image.imread('Coins.PNG')
